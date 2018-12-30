@@ -20,6 +20,7 @@ $(document).ready(function () {
         );
     });
 });
+
 function argValue(argumentValue) {
     let toReturnArgValue;
     if(argumentValue.charAt(0) === '['){
