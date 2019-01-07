@@ -1,52 +1,24 @@
 import $ from 'jquery';
-import {parseSymbolicSubstitution} from './Symbolic-Substitution';
+import * as flowchart from 'flowchart.js';
+import * as CFG from './Creat-CFG';
+
+let set ={
+    'line-color': 'black', 'element-color': 'black','font-size': 15, 'font-color': 'black',
+    'x': 99, 'y': 0, 'yes-text': 'T', 'no-text': 'F',
+    'line-width': 3, 'line-length': 60,'text-margin': 12, 'fill': '',
+    'arrow-end': 'block', 'scale': 1,
+    'symbols': { 'start': { 'font-color': 'black', 'element-color': 'green', 'fill': 'white', 'font-size': '18' },
+        'end': { 'class': 'end-element', 'fill': '#A8D18D', 'font-size': '18', 'font-color': '#A8D18D'} },
+    'flowstate': { 'truePath': {'fill': '#A8D18D', 'font-size': 15} }
+};
 
 $(document).ready(function () {
-    $('#codeSubmissionButton').click(() => {
-        let inputToFunc = {};
-        $('tr.Args').each(function() {
-            let argumentName = $(this).find('#Name').val(), argumentValue = $(this).find('#Value').val(), type = whatIsTheType(argumentValue);
-            inputToFunc[argumentName] = [], argumentValue = argValue(argumentValue);
-            inputToFunc[argumentName].push({'value': argumentValue, 'type': type, 'line': 0, 'conditions': []});
-        });
-        let ToParse = $('#codePlaceholder').val(), functionAfterSB = parseSymbolicSubstitution(inputToFunc, ToParse);
-        $('#transformedCode').html(functionAfterSB);
-    });
-
-    $('#allArgs').click(() => {
-        $('#args').append(
-            '<tr class="Args"><td><label>Name: <input id="Name" type="text"></label></td>' +
-            '<td><label>Value: <input id="Value" type="text"></label></td></tr>'
-        );
+    $('#parse').click(() => {
+        $('#cfg').text('');
+        var argsInputToFunc, codeToCFG, codeToParse;
+        argsInputToFunc = $('#args').val(), codeToParse = $('#codePlaceholder').val();
+        codeToCFG = CFG.CFGstart(argsInputToFunc, codeToParse);
+        flowchart.parse(codeToCFG).drawSVG('cfg', set);
     });
 });
-
-function argValue(argumentValue) {
-    let toReturnArgValue;
-    if(argumentValue.charAt(0) === '['){
-        let len = argumentValue.length - 1;
-        let array = argumentValue.substring(1, len).replace(/ /g,'');
-        toReturnArgValue = array.split(',');
-    }
-    return toReturnArgValue;
-}
-function whatIsTheType(argumentValue) {
-    if(argumentValue.charAt(0) === '[')
-        return 'array';
-    else if(argumentValue === 'false')
-        return 'bool';
-    else
-        return whatIsTheType2(argumentValue);
-}
-
-function whatIsTheType2(argumentValue) {
-    if (argumentValue === 'true')
-        return 'bool';
-    else if(argumentValue.charAt(0) === '\\"')
-        return 'string';
-    else if(argumentValue.charAt(0) === '\'')
-        return 'string';
-    else
-        return 'num';
-}
 
